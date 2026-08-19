@@ -1,0 +1,92 @@
+schema_name,table_name,column_name,data_type,is_primary_key,is_foreign_key,references,description,business_synonyms,sample_values,relevance_tier,sensitive_flag
+campaign,campaign_channels,channel_id,INT,Y,N,,Unique identifier for a marketing channel,channel id,1; 2; 3,medium,N
+campaign,campaign_channels,channel_name,VARCHAR(50),N,N,,Name of the marketing channel,channel; medium,Instagram Ads; Email Blast,high,N
+campaign,campaign_channels,channel_type,VARCHAR(30),N,N,,Category the channel belongs to,channel category; medium type,Digital; Social; Email; Print; TV,medium,N
+campaign,campaigns,campaign_id,INT,Y,N,,Unique identifier for a campaign,campaign id,101; 102,medium,N
+campaign,campaigns,campaign_name,VARCHAR(100),N,N,,Name/title of the marketing campaign,campaign; promo name,Summer Sale 2026; Diwali Push,high,N
+campaign,campaigns,channel_id,INT,N,Y,campaign.campaign_channels.channel_id,Channel this campaign ran on,channel used,1; 2,medium,N
+campaign,campaigns,start_date,DATE,N,N,,Date the campaign started,launch date; start,2026-06-01,high,N
+campaign,campaigns,end_date,DATE,N,N,,Date the campaign ended,end date; wrap-up date,2026-06-30,high,N
+campaign,campaigns,budget,"DECIMAL(12,2)",N,N,,Total budget allocated to the campaign,budget; spend limit,50000.00,high,N
+campaign,campaigns,status,VARCHAR(20),N,N,,Current lifecycle status of the campaign,campaign status,Planned; Active; Paused; Completed,high,N
+campaign,campaign_performance,perf_id,INT,Y,N,,Unique identifier for a performance record,record id,1,low,N
+campaign,campaign_performance,campaign_id,INT,N,Y,campaign.campaigns.campaign_id,Campaign this performance row belongs to,campaign id,101,medium,N
+campaign,campaign_performance,perf_date,DATE,N,N,,Date the performance metrics were recorded,date; day,2026-06-05,high,N
+campaign,campaign_performance,impressions,INT,N,N,,Number of times the campaign was shown,impressions; views,15000,high,N
+campaign,campaign_performance,clicks,INT,N,N,,Number of clicks the campaign received,clicks; click count,320,high,N
+campaign,campaign_performance,spend,"DECIMAL(10,2)",N,N,,Amount spent on that day for the campaign,daily spend; cost,450.75,high,N
+customer,customers,customer_id,INT,Y,N,,Unique identifier for a customer,customer id; client id,1001,high,N
+customer,customers,first_name,VARCHAR(50),N,N,,Customer's first name,first name,Ravi,medium,Y
+customer,customers,last_name,VARCHAR(50),N,N,,Customer's last name,last name; surname,Kumar,medium,Y
+customer,customers,email,VARCHAR(100),N,N,,Customer's email address,email; contact email,ravi.kumar@example.com,low,Y
+customer,customers,phone,VARCHAR(20),N,N,,Customer's phone number,phone; contact number,+91-9876543210,low,Y
+customer,customers,signup_date,DATE,N,N,,Date the customer registered,signup date; join date; registration date,2024-03-12,high,N
+customer,customers,city,VARCHAR(50),N,N,,City the customer lives in,city; location,Bengaluru,high,N
+customer,customers,state,VARCHAR(50),N,N,,State the customer lives in,state; region,Karnataka,high,N
+customer,customers,country,VARCHAR(50),N,N,,Country the customer lives in,country,India,medium,N
+customer,customer_segments,segment_id,INT,Y,N,,Unique identifier for a customer segment,segment id,1,low,N
+customer,customer_segments,segment_name,VARCHAR(50),N,N,,Name of the customer segment,segment; cohort,High Value; At Risk; New,high,N
+customer,customer_segments,criteria_description,VARCHAR(255),N,N,,Plain-English rule defining the segment,segment criteria,Spent over 50000 in last 90 days,low,N
+customer,customer_segment_map,customer_id,INT,Y,Y,customer.customers.customer_id,Customer assigned to a segment,customer id,1001,medium,N
+customer,customer_segment_map,segment_id,INT,Y,Y,customer.customer_segments.segment_id,Segment the customer belongs to,segment id,1,medium,N
+customer,customer_segment_map,assigned_date,DATE,N,N,,Date the customer was assigned to the segment,assigned date,2026-01-15,low,N
+products,product_categories,category_id,INT,Y,N,,Unique identifier for a product category,category id,1,low,N
+products,product_categories,category_name,VARCHAR(50),N,N,,Name of the product category,category; product type,Electronics; Apparel; Groceries,high,N
+products,products,product_id,INT,Y,N,,Unique identifier for a product,product id; SKU id,5001,high,N
+products,products,product_name,VARCHAR(100),N,N,,Name of the product,product; item name,Wireless Earbuds X200,high,N
+products,products,category_id,INT,N,Y,products.product_categories.category_id,Category the product belongs to,category id,1,medium,N
+products,products,sub_category,VARCHAR(50),N,N,,Finer classification within the category,sub-category,Audio; Footwear,medium,N
+products,products,brand,VARCHAR(50),N,N,,Brand/manufacturer of the product,brand; manufacturer,BoatFit; Nike,medium,N
+products,products,unit_price,"DECIMAL(10,2)",N,N,,List price of one unit of the product,price; unit price; MRP,1999.00,high,N
+products,inventory,inventory_id,INT,Y,N,,Unique identifier for an inventory record,inventory id,1,low,N
+products,inventory,product_id,INT,N,Y,products.products.product_id,Product this inventory record tracks,product id,5001,medium,N
+products,inventory,warehouse_location,VARCHAR(50),N,N,,Warehouse holding the stock,warehouse; location,Bengaluru DC1,medium,N
+products,inventory,stock_quantity,INT,N,N,,Units currently in stock,stock; quantity on hand,340,high,N
+products,inventory,last_restocked_date,DATE,N,N,,Date the warehouse was last restocked,restock date,2026-07-20,medium,N
+sales,orders,order_id,INT,Y,N,,Unique identifier for an order,order id,90001,high,N
+sales,orders,customer_id,INT,N,Y,customer.customers.customer_id,Customer who placed the order,customer id,1001,high,N
+sales,orders,campaign_id,INT,N,Y,campaign.campaigns.campaign_id,Campaign that drove this order (nullable),campaign id; source campaign,101,medium,N
+sales,orders,order_date,DATE,N,N,,Date the order was placed,order date; purchase date,2026-07-15,high,N
+sales,orders,order_status,VARCHAR(20),N,N,,Current status of the order,order status,Placed; Shipped; Delivered; Cancelled; Returned,high,N
+sales,order_items,order_item_id,INT,Y,N,,Unique identifier for an order line item,line item id,1,low,N
+sales,order_items,order_id,INT,N,Y,sales.orders.order_id,Order this line item belongs to,order id,90001,medium,N
+sales,order_items,product_id,INT,N,Y,products.products.product_id,Product purchased in this line item,product id,5001,high,N
+sales,order_items,quantity,INT,N,N,,Number of units purchased in this line item,quantity; units bought,2,high,N
+sales,order_items,unit_price,"DECIMAL(10,2)",N,N,,Price per unit at the time of sale,sale price; unit price,1899.00,high,N
+sales,order_items,discount,"DECIMAL(5,2)",N,N,,Discount applied to this line item,discount; markdown,10.00,medium,N
+sales,transactions,transaction_id,INT,Y,N,,Unique identifier for a payment transaction,transaction id,70001,medium,N
+sales,transactions,order_id,INT,N,Y,sales.orders.order_id,Order this transaction paid for,order id,90001,medium,N
+sales,transactions,payment_method,VARCHAR(30),N,N,,Method used to pay for the order,payment method; payment type,Credit Card; UPI; COD,medium,N
+sales,transactions,transaction_amount,"DECIMAL(12,2)",N,N,,Amount charged in this transaction,revenue; amount paid; order value,3798.00,high,N
+sales,transactions,transaction_date,DATETIME,N,N,,Timestamp the transaction was processed,transaction date; payment date,2026-07-15 14:32:00,high,N
+loyalty,loyalty_accounts,loyalty_id,INT,Y,N,,Unique identifier for a loyalty account,loyalty id; membership id,1,medium,N
+loyalty,loyalty_accounts,customer_id,INT,N,Y,customer.customers.customer_id,Customer who owns the loyalty account,customer id,1001,high,N
+loyalty,loyalty_accounts,tier,VARCHAR(20),N,N,,Loyalty membership tier,tier; membership level,Bronze; Silver; Gold; Platinum,high,N
+loyalty,loyalty_accounts,points_balance,INT,N,N,,Current reward points balance,points; points balance,1250,high,N
+loyalty,loyalty_accounts,enrollment_date,DATE,N,N,,Date the customer enrolled in the loyalty program,enrollment date; joined loyalty,2024-05-01,medium,N
+loyalty,loyalty_rewards,reward_id,INT,Y,N,,Unique identifier for a reward,reward id,1,low,N
+loyalty,loyalty_rewards,reward_name,VARCHAR(100),N,N,,Name of the redeemable reward,reward; reward name,Free Shipping Voucher,medium,N
+loyalty,loyalty_rewards,points_required,INT,N,N,,Points needed to redeem this reward,points needed; redemption cost,500,medium,N
+loyalty,loyalty_rewards,reward_type,VARCHAR(30),N,N,,Category of reward,reward type,Discount; Freebie; Cashback; Upgrade,low,N
+loyalty,loyalty_transactions,loyalty_txn_id,INT,Y,N,,Unique identifier for a loyalty ledger entry,loyalty transaction id,1,low,N
+loyalty,loyalty_transactions,loyalty_id,INT,N,Y,loyalty.loyalty_accounts.loyalty_id,Loyalty account this entry belongs to,loyalty id,1,medium,N
+loyalty,loyalty_transactions,points_change,INT,N,N,,Points earned (positive) or redeemed (negative),points earned; points redeemed,100; -500,high,N
+loyalty,loyalty_transactions,reason,VARCHAR(100),N,N,,Reason for the points change,reason; description,Purchase reward; Redeemed for voucher,medium,N
+loyalty,loyalty_transactions,txn_date,DATETIME,N,N,,Timestamp of the loyalty transaction,transaction date,2026-07-15 14:35:00,medium,N
+market_data,companies,company_id,INTEGER,Y,N,,Unique identifier for a company,company id,"1",medium,N
+market_data,companies,ticker_symbol,VARCHAR(10),N,N,,Stock ticker symbol,ticker; stock symbol,"NVMT",high,N
+market_data,companies,company_name,VARCHAR(100),N,N,,Full legal name of the company,company; business name,"NovaMart Retail Inc.",high,N
+market_data,companies,exchange,VARCHAR(20),N,N,,Stock exchange the company trades on,exchange,"NASDAQ",medium,N
+market_data,companies,sector,VARCHAR(50),N,N,,Industry sector of the company,sector; industry,"Retail",medium,N
+market_data,daily_prices,price_id,INTEGER,Y,N,,Unique identifier for a daily price record,price record id,"1",low,N
+market_data,daily_prices,company_id,INTEGER,N,Y,market_data.companies.company_id,Company this price record belongs to,company id,"1",medium,N
+market_data,daily_prices,price_date,DATE,N,N,,Trading date for this price record,date; trading day,"2026-07-15",high,N
+market_data,daily_prices,open_price,"DECIMAL(10,2)",N,N,,Stock price at market open,open price; opening price,"152.30",high,N
+market_data,daily_prices,high_price,"DECIMAL(10,2)",N,N,,Highest stock price during the trading day,day high; high,"154.10",medium,N
+market_data,daily_prices,low_price,"DECIMAL(10,2)",N,N,,Lowest stock price during the trading day,day low; low,"151.20",medium,N
+market_data,daily_prices,close_price,"DECIMAL(10,2)",N,N,,Stock price at market close,closing price; stock price; share price,"153.45",high,N
+market_data,daily_prices,volume,BIGINT,N,N,,Number of shares traded that day,trading volume; shares traded,"1250000",medium,N
+market_data,market_indices,index_id,INTEGER,Y,N,,Unique identifier for an index price record,index record id,"1",low,N
+market_data,market_indices,index_name,VARCHAR(50),N,N,,Name of the benchmark market index,index; benchmark,"NIFTY 50",high,N
+market_data,market_indices,price_date,DATE,N,N,,Trading date for this index value,date; trading day,"2026-07-15",high,N
+market_data,market_indices,close_value,"DECIMAL(12,2)",N,N,,Closing value of the index that day,index value; index close,"22450.30",high,N

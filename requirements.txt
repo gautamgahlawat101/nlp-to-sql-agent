@@ -1,0 +1,12 @@
+sqlalchemy
+psycopg2-binary
+pandas
+sqlglot
+python-dotenv
+streamlit
+openai
+rapidfuzz
+tenacity
+pydantic
+faker
+yfinance
