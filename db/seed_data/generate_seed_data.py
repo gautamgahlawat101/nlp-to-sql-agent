@@ -8,11 +8,13 @@ Usage:
 import random
 import sys
 import os
+import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from faker import Faker
 from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from db.connection import get_engine
 
 fake = Faker()
@@ -24,9 +26,17 @@ N_CAMPAIGNS = 15
 N_ORDERS = 500
 
 
-def run(sql, params=None):
-    with engine.begin() as conn:
-        return conn.execute(text(sql), params or {})
+def run(sql, params=None, retries=3):
+    last_error = None
+    for attempt in range(1, retries + 1):
+        try:
+            with engine.begin() as conn:
+                return conn.execute(text(sql), params or {})
+        except OperationalError as e:
+            last_error = e
+            print(f"  Connection hiccup (attempt {attempt}/{retries}), retrying...")
+            time.sleep(2 * attempt)
+    raise last_error
 
 
 def seed_campaigns():

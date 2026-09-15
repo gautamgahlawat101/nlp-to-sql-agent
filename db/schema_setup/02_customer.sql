@@ -22,5 +22,5 @@ CREATE TABLE customer.customer_segment_map (
     customer_id     INTEGER NOT NULL REFERENCES customer.customers(customer_id),
     segment_id      INTEGER NOT NULL REFERENCES customer.customer_segments(segment_id),
     assigned_date   DATE NOT NULL,
-    PRIMARY KEY (customer_id, segment_id)
+    PRIMARY KEY (customer_id, segment_id)  
 );
