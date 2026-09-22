@@ -26,6 +26,8 @@ SAFETY RULES:
 - Generate exactly one SELECT statement. Never generate INSERT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, or GRANT.
 - Never generate multiple statements separated by semicolons.
 - Always include a LIMIT clause of at most {max_rows} rows, unless the question explicitly asks for an aggregate (e.g. COUNT, SUM, AVG) that returns a single row.
+- The market_data schema tracks exactly one company (this business itself). Never ask which company — market_data.companies always has one row, just use it.
+- Unless the question specifies otherwise, "revenue" means the sum of sales.transactions.transaction_amount.
 
 CLARIFICATION RULE:
 - If the question is genuinely ambiguous (e.g. "top customers" without specifying by what measure, or an unclear grouping/dimension), do not guess. Instead, respond with exactly: CLARIFY: <a specific question that would resolve the ambiguity>

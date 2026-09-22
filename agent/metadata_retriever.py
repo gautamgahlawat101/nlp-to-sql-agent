@@ -44,17 +44,8 @@ _METADATA = _load_metadata()
 
 
 def retrieve_relevant_columns(question: str, top_n: int = 20, min_score: float = 1.0):
-    """
-    Word-level fuzzy matching: each meaningful word in the question is compared
-    against every word associated with a column (its name, table, and business
-    synonyms), counting only near-identical spellings as a match. This catches
-    real variations (typos, plurals: "campaign" vs "campaigns") without being
-    fooled by coincidentally similar-looking but unrelated words ("customer"
-    vs "company"), which a single blob-level character score couldn't tell apart.
-    """
     question_words = [w for w in question.lower().split() if w not in _STOPWORDS]
     scored = []
-
     for _, row in _METADATA.iterrows():
         match_score = 0.0
         for qw in question_words:
@@ -64,26 +55,36 @@ def retrieve_relevant_columns(question: str, top_n: int = 20, min_score: float =
         match_score *= _TIER_WEIGHT.get(row["relevance_tier"], 1.0)
         if match_score >= min_score:
             scored.append((match_score, row))
-
     scored.sort(key=lambda x: x[0], reverse=True)
     top_rows = [row for _, row in scored[:top_n]]
-
-    # Always include PK/FK columns (needed for JOINs) and date/timestamp
-    # columns (needed for "this year", "last quarter" style filters that
-    # rarely name the actual column) for any table that made the shortlist.
     matched_tables = {(r["schema_name"], r["table_name"]) for r in top_rows}
+
+    # market_data's 3 tables are always used together for stock/comparison
+    # questions, even when the wording only overlaps with one of them (e.g.
+    # "did we outperform NIFTY" never says "stock" or "company"). Pull in the
+    # rest of market_data whenever any part of it matched, so the LLM sees the
+    # full picture instead of guessing or refusing to answer.
+    if any(s == "market_data" for s, _ in matched_tables):
+        matched_tables.update(
+            (s, t) for s, t in _METADATA[["schema_name", "table_name"]].drop_duplicates().values
+            if s == "market_data"
+        )
+
     support_rows = _METADATA[
         _METADATA.apply(
             lambda r: (r["schema_name"], r["table_name"]) in matched_tables
-            and (r["is_primary_key"] == "Y" or r["is_foreign_key"] == "Y" or r["is_date_type"]),
+            and (
+                r["is_primary_key"] == "Y"
+                or r["is_foreign_key"] == "Y"
+                or r["is_date_type"]
+                or r["schema_name"] == "market_data"
+            ),
             axis=1,
         )
     ]
-
     combined = pd.concat([pd.DataFrame(top_rows), support_rows]).drop_duplicates(
         subset=["schema_name", "table_name", "column_name"]
     )
-
     return combined.drop(columns=["search_words", "is_date_type"]).to_dict(orient="records")
 
 
