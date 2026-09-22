@@ -1,0 +1,18 @@
+[
+    {
+      "question": "How many customers do we have?",
+      "sql": "SELECT COUNT(*) AS customer_count FROM customer.customers;"
+    },
+    {
+      "question": "List the top 5 customers by total amount spent",
+      "sql": "SELECT c.customer_id, c.first_name, c.last_name, SUM(t.transaction_amount) AS total_spent FROM customer.customers c JOIN sales.orders o ON o.customer_id = c.customer_id JOIN sales.transactions t ON t.order_id = o.order_id GROUP BY c.customer_id, c.first_name, c.last_name ORDER BY total_spent DESC LIMIT 5;"
+    },
+    {
+      "question": "Which campaigns generated the most orders?",
+      "sql": "SELECT ca.campaign_name, COUNT(o.order_id) AS order_count FROM campaign.campaigns ca JOIN sales.orders o ON o.campaign_id = ca.campaign_id GROUP BY ca.campaign_name ORDER BY order_count DESC LIMIT 20;"
+    },
+    {
+      "question": "What was the average closing stock price in the 5 days after each campaign started?",
+      "sql": "SELECT ca.campaign_name, AVG(dp.close_price) AS avg_close_after_launch FROM campaign.campaigns ca JOIN market_data.daily_prices dp ON dp.price_date BETWEEN ca.start_date + INTERVAL '1 day' AND ca.start_date + INTERVAL '5 days' GROUP BY ca.campaign_name LIMIT 20;"
+    }
+  ]
