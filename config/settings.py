@@ -2,6 +2,11 @@
 Central config. Everything pulls from environment variables (.env locally,
 Streamlit secrets in the cloud) — no credentials ever hardcoded here.
 """
+
+import os
+from urllib.parse import quote_plus
+from dotenv import load_dotenv
+
 import os
 from dotenv import load_dotenv
 
@@ -15,8 +20,16 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 DATABASE_URL = (
-    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    f"postgresql+psycopg2://{DB_USER}:{quote_plus(DB_PASSWORD or '')}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
 )
+
+AGENT_DB_USER = os.getenv("AGENT_DB_USER")
+AGENT_DB_PASSWORD = os.getenv("AGENT_DB_PASSWORD")
+
+AGENT_DATABASE_URL = (
+    f"postgresql+psycopg2://{AGENT_DB_USER}:{quote_plus(AGENT_DB_PASSWORD or '')}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
+)
+
 
 # --- LLM Provider ---
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openrouter")
